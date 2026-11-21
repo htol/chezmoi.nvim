@@ -139,6 +139,35 @@ local function apply()
   end)
 end
 
+local function preview()
+  local buf = vim.api.nvim_get_current_buf()
+  local path = vim.bo[buf].buftype == '' and vim.api.nvim_buf_get_name(buf) or ''
+  with_index(function()
+    if not vim.api.nvim_buf_is_valid(buf) then
+      return
+    end
+    local target = path ~= '' and index.target_of(path) or nil
+    if target then
+      if (index.source_of(target) or path):match('%.tmpl$') then
+        require('chezmoi.preview').open(buf, target)
+      else
+        info(home(target) .. ' is not a template; its source is copied as is')
+      end
+      return
+    end
+    local source = path ~= '' and index.source_of(path) or nil
+    if source then
+      if source:match('%.tmpl$') then
+        info(home(path) .. ' is a target; preview its template ' .. home(source))
+      else
+        info(home(path) .. ' is not a template; its source is copied as is')
+      end
+      return
+    end
+    info((path == '' and 'the current buffer' or home(path)) .. ' is not managed by chezmoi')
+  end)
+end
+
 local function refresh()
   index.build(function(ok, msg)
     if ok then
@@ -166,6 +195,7 @@ M.subcommands = {
   forget = { run = forget },
   unmanage = { alias_of = 'forget' },
   apply = { run = apply },
+  preview = { run = preview },
   refresh = { run = refresh },
 }
 

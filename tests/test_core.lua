@@ -47,6 +47,19 @@ T['runner']['reports exit code and trimmed stderr, asynchronously'] = function()
   eq(child.lua_get('{ _G.res.ok, _G.res.code, _G.res.stderr }'), { false, 3, 'boom' })
 end
 
+T['runner']['passes stdin to the process'] = function()
+  H.start(child, ctx.home)
+  child.lua([[
+    require('chezmoi.config').setup({ cmd = 'sh' })
+    _G.res = nil
+    require('chezmoi.runner').run({ '-c', 'tr a-z A-Z' }, function(result)
+      _G.res = result
+    end, { stdin = 'hello\n' })
+  ]])
+  H.wait(child, '_G.res')
+  eq(child.lua_get('{ _G.res.ok, _G.res.stdout }'), { true, 'HELLO\n' })
+end
+
 T['runner']['missing executable is reported through the callback'] = function()
   H.start(child, ctx.home)
   child.lua([[

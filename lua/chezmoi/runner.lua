@@ -15,7 +15,8 @@ local may_prompt = { add = true, apply = true, forget = true }
 ---Run chezmoi asynchronously. `cb` is always called on the main loop, never before `run` returns.
 ---@param args string[]
 ---@param cb fun(res: chezmoi.Result)
-function M.run(args, cb)
+---@param opts? { stdin?: string } stdin: text written to the process's stdin, which is then closed
+function M.run(args, cb, opts)
   local argv = { config.options.cmd }
   if may_prompt[args[1]] then
     argv[#argv + 1] = '--no-tty'
@@ -29,7 +30,7 @@ function M.run(args, cb)
   local ok, err = pcall(
     vim.system,
     argv,
-    { text = true },
+    { text = true, stdin = opts and opts.stdin },
     vim.schedule_wrap(function(res)
       finish(res.code, res.stdout, res.stderr)
     end)

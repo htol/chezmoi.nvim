@@ -31,7 +31,7 @@ T['completion lists subcommands and aliases'] = function()
   H.start(child, ctx.home)
   eq(
     child.lua_get('vim.fn.getcompletion("Chezmoi ", "cmdline")'),
-    { 'add', 'apply', 'forget', 'manage', 'refresh', 'unmanage' }
+    { 'add', 'apply', 'forget', 'manage', 'preview', 'refresh', 'unmanage' }
   )
   eq(child.lua_get('vim.fn.getcompletion("Chezmoi ma", "cmdline")'), { 'manage' })
   eq(child.lua_get('vim.fn.getcompletion("Chezmoi manage --te", "cmdline")'), { '--template' })
@@ -44,7 +44,7 @@ T['unknown subcommand lists the valid ones'] = function()
   eq(#notes, 1)
   eq(notes[1].level, vim.log.levels.ERROR)
   MiniTest.expect.no_equality(
-    notes[1].msg:find('add, apply, forget, manage, refresh, unmanage', 1, true),
+    notes[1].msg:find('add, apply, forget, manage, preview, refresh, unmanage', 1, true),
     nil
   )
 end

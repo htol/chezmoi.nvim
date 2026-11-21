@@ -10,5 +10,5 @@ end, {
   complete = function(arglead, cmdline, pos)
     return require('chezmoi.command').complete(arglead, cmdline, pos)
   end,
-  desc = 'chezmoi: add, forget, apply, refresh',
+  desc = 'chezmoi: add, forget, apply, preview, refresh',
 })

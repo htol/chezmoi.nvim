@@ -7,7 +7,8 @@ file:
   target's filetype.
 - Writing a source applies exactly that target, asynchronously, and reports the result. Scripts
   are never run.
-- `:Chezmoi add | manage | forget | unmanage | apply | refresh`.
+- `:Chezmoi add | manage | forget | unmanage | apply | preview | refresh`. `preview` renders the
+  current template, unsaved edits included, into a split.
 - `require('chezmoi').is_managed(0)` for statuslines.
 - `:checkhealth chezmoi`.
 

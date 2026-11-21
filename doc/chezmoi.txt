@@ -21,7 +21,7 @@ edited:
 - Opening a managed target (for example `~/.bashrc`) opens its source
   (`dot_bashrc`) instead, with the filetype of the target.
 - Writing a source applies exactly its target and reports the result.
-- `:Chezmoi` adds, forgets, applies and refreshes.
+- `:Chezmoi` adds, forgets, applies, previews templates and refreshes.
 
 Every chezmoi invocation runs asynchronously. Scripts (`run_*`) are never
 executed by the plugin. Encrypted files, symlinks and externals are ignored.
@@ -75,6 +75,28 @@ Defaults: >lua
 :Chezmoi apply                                                *:Chezmoi-apply*
     Apply the target of the current buffer (target or source), whatever the
     value of `apply_on_save`.
+
+:Chezmoi preview                                            *:Chezmoi-preview*
+    Render the current template source (a source ending in `.tmpl`),
+    including unsaved changes, and show the result in a read-only vertical
+    split next to it, with the filetype of the target. The cursor stays in
+    the source. Running the command again re-renders into the same window.
+    For any other buffer it explains why there is nothing to preview; a
+    template that fails to render reports chezmoi's error.
+
+    The preview is not live. It is re-rendered when its source is written,
+    whatever the value of `apply_on_save`, and when the command is run
+    again. In between, the winbar shows `[stale]` as soon as the source
+    changes, highlighted with |hl-ChezmoiPreviewStale|. A failed render keeps
+    the previous content and marks it stale. Closing the preview window
+    stops all refreshing.
+
+    The template is rendered from the buffer text, not the file, so
+    `.chezmoi.sourceFile` is `"stdin"` in the preview.
+
+                                                      *hl-ChezmoiPreviewStale*
+ChezmoiPreviewStale
+    Stale mark in the preview winbar. Linked to |hl-WarningMsg| by default.
 
 :Chezmoi refresh                                            *:Chezmoi-refresh*
     Rediscover the source directory and rebuild the index, for example after
