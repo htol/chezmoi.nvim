@@ -113,10 +113,3 @@ only the throwaway source dir. Async waits use `vim.wait` with a timeout in the 
   first `:Chezmoi`; README recommends `lazy = false` (setup is cheap).
 - [chezmoi output format changes] → minimum chezmoi version checked in health; JSON parse
   failures surface as a single error notification.
-
-## Migration Plan
-
-The dotfiles repository later replaces `require('config.chezmoi')` with a lazy.nvim spec for
-`htol/chezmoi.nvim`, and the lualine component switches from `_G.chezmoi.is_managed()` to
-`require('chezmoi').is_managed(0)`. That is a separate edit in that repository, shown as a diff
-before it is made.

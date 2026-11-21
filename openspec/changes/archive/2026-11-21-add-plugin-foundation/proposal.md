@@ -41,5 +41,3 @@ None (greenfield).
   `tests/`, `Makefile`, `README.md`.
 - Requires Neovim >= 0.12 and chezmoi >= 2.70 on `PATH`; no Lua plugin dependencies at runtime.
   Tests fetch mini.nvim into an ignored directory.
-- The user's dotfiles config later switches from its in-tree prototype to this plugin; that edit
-  happens in the dotfiles repository and is not part of this change.
