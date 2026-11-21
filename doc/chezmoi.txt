@@ -1,0 +1,113 @@
+*chezmoi.txt*  Edit chezmoi-managed dotfiles from Neovim
+
+                                                        *chezmoi* *chezmoi.nvim*
+
+==============================================================================
+CONTENTS                                                    *chezmoi-contents*
+
+  1. Introduction ............................... |chezmoi-intro|
+  2. Setup ...................................... |chezmoi-setup|
+  3. Options .................................... |chezmoi-options|
+  4. Commands ................................... |chezmoi-commands|
+  5. Lua API .................................... |chezmoi-api|
+  6. Health ..................................... |chezmoi-health|
+
+==============================================================================
+1. INTRODUCTION                                                *chezmoi-intro*
+
+chezmoi.nvim makes the chezmoi source the only place a managed dotfile is
+edited:
+
+- Opening a managed target (for example `~/.bashrc`) opens its source
+  (`dot_bashrc`) instead, with the filetype of the target.
+- Writing a source applies exactly its target and reports the result.
+- `:Chezmoi` adds, forgets, applies and refreshes.
+
+Every chezmoi invocation runs asynchronously. Scripts (`run_*`) are never
+executed by the plugin. Encrypted files, symlinks and externals are ignored.
+
+Requirements: Neovim >= 0.12, chezmoi >= 2.70 on `PATH`.
+
+==============================================================================
+2. SETUP                                                       *chezmoi-setup*
+
+                                                             *chezmoi.setup()*
+require('chezmoi').setup({opts})
+    Activates redirect and apply-on-save and builds the index of managed
+    files in the background. Returns without waiting for chezmoi. Calling it
+    again replaces the options and rebuilds the index.
+
+    Without `setup()`, the first `:Chezmoi` command calls it with defaults.
+    Load the plugin at startup (not only on the command) so that redirect and
+    apply-on-save are active from the start.
+
+==============================================================================
+3. OPTIONS                                                   *chezmoi-options*
+
+Defaults: >lua
+    require('chezmoi').setup({
+      cmd = 'chezmoi',      -- chezmoi executable
+      redirect = true,      -- open the source when a managed target is opened
+      apply_on_save = true, -- apply the target when its source is written
+    })
+<
+
+==============================================================================
+4. COMMANDS                                                 *chezmoi-commands*
+
+                                                                    *:Chezmoi*
+:Chezmoi {subcommand} [args]
+    Subcommands and aliases complete with <Tab>.
+
+:Chezmoi add [args]                                             *:Chezmoi-add*
+:Chezmoi manage [args]
+    Add the file of the current buffer to chezmoi and show its new source in
+    the window. Extra arguments are passed to `chezmoi add`, for example
+    `--template`. Refuses a buffer with unsaved changes, without a file, or
+    already managed.
+
+:Chezmoi forget                                              *:Chezmoi-forget*
+:Chezmoi unmanage
+    After confirmation, stop managing the file of the current buffer (target
+    or source), delete its source and keep the target, which is then shown
+    in the window. Refuses an unmanaged buffer or one with unsaved changes.
+
+:Chezmoi apply                                                *:Chezmoi-apply*
+    Apply the target of the current buffer (target or source), whatever the
+    value of `apply_on_save`.
+
+:Chezmoi refresh                                            *:Chezmoi-refresh*
+    Rediscover the source directory and rebuild the index, for example after
+    `chezmoi add` in a shell.
+
+Targets changed outside chezmoi are never overwritten: the apply fails with an
+error naming the target. Resolve it with `chezmoi diff` or `chezmoi merge` in
+a shell.
+
+==============================================================================
+5. LUA API                                                       *chezmoi-api*
+
+All functions answer from the in-memory index and run no process. Before the
+index is ready, every buffer is reported as not managed.
+
+                                                        *chezmoi.is_managed()*
+require('chezmoi').is_managed({buf})
+    True when the file of {buf} (0 or nil: current buffer) is a managed
+    target or the source of one. Suitable for statuslines: >lua
+        function() return require('chezmoi').is_managed(0) and 'chezmoi' or '' end
+<
+                                                         *chezmoi.source_of()*
+require('chezmoi').source_of({path})
+    Absolute source path of the managed target {path}, or nil.
+
+                                                         *chezmoi.target_of()*
+require('chezmoi').target_of({path})
+    Absolute target path of the source {path}, or nil.
+
+==============================================================================
+6. HEALTH                                                     *chezmoi-health*
+
+`:checkhealth chezmoi` reports the Neovim and chezmoi versions, the source
+directory (or chezmoi's error for it) and the number of indexed files.
+
+ vim:tw=78:ts=8:ft=help:norl:
